@@ -1,4 +1,14 @@
 <x-app-layout>
+
+
+    @php
+    $user = auth()->user();
+    $currentUser = auth()->user()->id;
+    $data = \App\Models\User::find($currentUser);
+    $isPremium = $data->UserSubscription->isPremium ?? false;
+    @endphp
+
+    
     @section('title')
     Manage Blogs
     @endsection
@@ -8,14 +18,59 @@
             {{ __('Manage Blogs') }}
         </h2>
     </x-slot>
+    {{-- <div class="flex justify-center">
 
+        @if (!$isPremium && count($blogs) >= 3)
+        <div class="ml-auto font-bold px-12 py-3 max-w-sm text-slate-400 bg-slate-50 rounded-xl shadow-lg flex">
+            Debt
+        </div>
+        @else
+        <a class="ml-auto" href="/editor">
+            <x-button-link href="{{ route('blogs.create') }}" class="">
+                {{ __('Create a Blog') }}
+            </x-button-link>   
+        </a>
+        @endif
+        @unless ($isPremium)
+        <a class="ml-5" href="/subscribe">
+            <div
+                class="font-bold px-12 py-3 max-w-sm bg-amber-100 rounded-xl shadow-lg flex items-center hover:bg-amber-200">
+                <h1>GO PREMIUM</h1>
+            </div>
+        </a>
+        @else
+        <div class="font-bold px-12 py-3 max-w-sm bg-emerald-200 rounded-xl shadow-lg ml-5 flex items-center">
+            <h1>PREMIUM</h1>
+        </div>
+        @endunless
+    </div> --}}
+
+
+    
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex justify-between mb-8 px-5 sm:px-0 ">
                 <div>
-                    <x-button-link href="{{ route('blogs.create') }}" class="">
-                        {{ __('Create a Blog') }}
-                    </x-button-link>   
+                    @if (!$isPremium && (!is_null($blogs) && count($blogs) >= 3) && !$user->isAdmin() )
+                
+                      
+                    @else
+                        <x-button-link href="{{ route('blogs.create') }}" class="">
+                            {{ __('Create a Blog') }}
+                        </x-button-link>   
+                    @endif
+
+                    @if ($isPremium || $user->isAdmin())
+                        <x-button-premium class="disabled ml-5">
+                            {{ __('PREMIUM') }}
+                        </x-button-premium> 
+                       
+                 
+                    @else
+                        <x-button-link  href="/subscribe" class="ml-5 bg-amber-600 dark:bg-amber-400 dark:hover:bg-green-400">
+                            {{ __('GO PREMIUM') }}
+                        </x-button-link>
+                    @endif
                 </div>
                 
                 <div class="max:w-md">

@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreBlogRequest;
-use App\Http\Requests\UpdateBlogRequest;
-use App\Http\Requests\DeleteBlogRequest;
 use App\Models\Blog;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\UserSubscription;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\StoreBlogRequest;
+use App\Http\Requests\DeleteBlogRequest;
+use App\Http\Requests\UpdateBlogRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class BlogController extends Controller
@@ -43,6 +45,15 @@ class BlogController extends Controller
     public function create(Blog $blog)
     {
         $this->authorize('create', $blog);
+
+
+        $currentUser = auth()->user()->id;;
+        $data = \App\Models\User::find($currentUser);
+        $blogs = $data->Blog;
+        $isPremium = $data->UserSubscription->isPremium ?? false;
+        if (!$isPremium && (!is_null($blogs) && count($blogs) >= 3)) {
+            abort(403, 'Unauthorized Action');
+        }
 
         return view('blogs.create', ['content' => old('content')]);
     }

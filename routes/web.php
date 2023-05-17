@@ -1,10 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\PermissionsController;
+use App\Http\Controllers\UserSubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,9 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/homepage',[HomeController
 Route::group(['middleware' => 'auth'], function () {
     Route::resource('users', \App\Http\Controllers\UserController::class);
     Route::resource('blogs', \App\Http\Controllers\BlogController::class);
+    Route::get('/subscribe', [UserSubscriptionController::class, 'show']);
+    Route::post('/subscribe/premium', [UserSubscriptionController::class, 'store']);
+    Route::delete('/subscribe/cancel', [UserSubscriptionController::class, 'destroy']);
     // Roles
     Route::group(['prefix' => 'admin'], function () {
         Route::resource('roles', RolesController::class);

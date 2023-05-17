@@ -91,4 +91,15 @@ class User extends Authenticatable
         return $this->roles()->where('title', 'admin')->exists();
     }
 
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class, 'user_id');
+    }
+
+    public function userSubscription()
+    {
+        return $this->hasOne(UserSubscription::class, 'user_id');
+    }
+
+
 }
