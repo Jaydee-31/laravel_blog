@@ -92,6 +92,12 @@
                 
             </div>
             
+            @if (!$isPremium && !$user->isAdmin())
+                <x-alert-limit>
+                    You can only upload upto 3 Blogs. Go Premium
+                </x-alert-limit>
+                
+            @endif
             @if ($message = Session::get('success'))
                 <x-alert-success>
                     {{ $message }}
